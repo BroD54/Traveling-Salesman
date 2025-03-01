@@ -3,7 +3,7 @@ import Node from './Node'
 
 type GridProps = {
     nodes: NodeType[][];
-    toggleNode: (id: number, visited?:boolean, start?:boolean) => void;
+    toggleNode: (id: number, selected?:boolean, start?:boolean) => void;
 }
 
 const Grid = ({nodes, toggleNode}: GridProps) => {

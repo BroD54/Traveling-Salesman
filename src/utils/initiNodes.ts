@@ -9,6 +9,7 @@ const initNodes = (rows: number, cols: number): NodeType[][] => {
             x: i,
             y: j,
             isStart: false,
+            isSelected: false,
             isVisited: false,
             isOnPath: false
         });
