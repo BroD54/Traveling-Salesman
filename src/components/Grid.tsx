@@ -3,9 +3,10 @@ import Node from './Node'
 
 type GridProps = {
     nodes: NodeType[][];
+    toggleNode: (id: number, visited?:boolean, start?:boolean) => void;
 }
 
-const Grid = ({nodes}: GridProps) => {
+const Grid = ({nodes, toggleNode}: GridProps) => {
 
   return (
     <div className="flex flex-col justify-center items-center">
@@ -13,7 +14,7 @@ const Grid = ({nodes}: GridProps) => {
         nodes.map((row, rowIndex) => (
             <div key={rowIndex} className="flex">
                 {row.map((node, colIndex) => (
-                    <Node key={node.id} node={node} />
+                    <Node key={node.id} node={node} toggleNode={toggleNode} />
                 ))}
             </div>
             ))
