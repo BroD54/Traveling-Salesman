@@ -1,66 +1,138 @@
 const calculateTSPPath = (grid: NodeType[][]): NodeType[] => {
-  console.log('Calculating TSP Path...');
+	const convexHullPoints = grid.flat().filter((node) => node.isConvexHull);
+	const selectedNodes = grid
+		.flat()
+		.filter((node) => node.isSelected && !node.isConvexHull);
 
-  // Extract convex hull points from the grid
-  const convexHullPoints = grid.flat().filter(node => node.isConvexHull);
-  console.log('Convex Hull Points:', convexHullPoints);
+	if (convexHullPoints.length === 0) {
+		return selectedNodes.length ? solveTSP(selectedNodes) : [];
+	}
 
-  // Extract selected nodes from the grid
-  const selectedNodes = grid.flat().filter(node => node.isSelected);
-  console.log('Selected Nodes:', selectedNodes);
+	let tspPath = solveTSP(convexHullPoints);
 
-  // Combine convex hull points and selected nodes for TSP
-  const allNodes = [...convexHullPoints, ...selectedNodes];
-  console.log('All Nodes (Convex Hull + Selected):', allNodes);
+	tspPath = insertNodesWithoutCrossing(tspPath, selectedNodes);
 
-  if (allNodes.length === 0) {
-    console.error('No nodes found!');
-    return []; // Exit early if no nodes are found
-  }
+	tspPath = twoOptOptimization(tspPath);
 
-  // Start from the first node (convex hull or selected)
-  let visitedNodes: NodeType[] = [allNodes[0]]; // Start with the first point
-  let remainingNodes = [...allNodes.slice(1)]; // All other nodes
-  let currentNode = allNodes[0];
+	return tspPath;
+};
 
-  // Helper function to find the nearest node to the current node
-  const getNearestNode = (current: NodeType, nodes: NodeType[]): NodeType => {
-    let nearestNode = nodes[0];
-    let shortestDistance = getDistance(current, nearestNode);
+const solveTSP = (nodes: NodeType[]): NodeType[] => {
+	if (nodes.length === 0) return [];
 
-    // Loop through the remaining nodes and find the nearest one
-    for (let node of nodes) {
-      let distance = getDistance(current, node);
-      if (distance < shortestDistance) {
-        shortestDistance = distance;
-        nearestNode = node;
-      }
-    }
+	let path = [...nodes];
 
-    return nearestNode;
-  };
+	path.push(path[0]);
 
-  // Helper function to calculate the distance between two nodes (Euclidean distance)
-  const getDistance = (node1: NodeType, node2: NodeType): number => {
-    return Math.sqrt(Math.pow(node2.x - node1.x, 2) + Math.pow(node2.y - node1.y, 2));
-  };
+	return path;
+};
 
-  // While there are remaining nodes, find the nearest node and add it to the path
-  while (remainingNodes.length > 0) {
-    let nearestNode = getNearestNode(currentNode, remainingNodes);
-    visitedNodes.push(nearestNode);
+const insertNodesWithoutCrossing = (
+	path: NodeType[],
+	innerNodes: NodeType[]
+): NodeType[] => {
+	if (innerNodes.length === 0) return path;
 
-    // Remove the visited node from the remaining nodes
-    remainingNodes = remainingNodes.filter(node => node.id !== nearestNode.id);
+	let updatedPath = [...path];
 
-    // Set the current node to the nearest node
-    currentNode = nearestNode;
-  }
+	for (let node of innerNodes) {
+		let bestIndex = 1;
+		let minExtraDistance = Infinity;
 
-  // To complete the tour, return to the starting point (first node)
-  visitedNodes.push(visitedNodes[0]);
+		for (let i = 1; i < updatedPath.length; i++) {
+			let prev = updatedPath[i - 1];
+			let next = updatedPath[i];
 
-  return visitedNodes;
+			let extraDistance =
+				getDistance(prev, node) +
+				getDistance(node, next) -
+				getDistance(prev, next);
+
+			if (
+				extraDistance < minExtraDistance &&
+				!wouldCauseCrossing(updatedPath, prev, node, next)
+			) {
+				minExtraDistance = extraDistance;
+				bestIndex = i;
+			}
+		}
+
+		updatedPath.splice(bestIndex, 0, node);
+	}
+
+	return updatedPath;
+};
+
+const wouldCauseCrossing = (
+	path: NodeType[],
+	prev: NodeType,
+	newNode: NodeType,
+	next: NodeType
+): boolean => {
+	for (let i = 0; i < path.length - 2; i++) {
+		let a = path[i];
+		let b = path[i + 1];
+
+		if (
+			doLinesIntersect(a, b, prev, newNode) ||
+			doLinesIntersect(a, b, newNode, next)
+		) {
+			return true;
+		}
+	}
+	return false;
+};
+
+const twoOptOptimization = (path: NodeType[]): NodeType[] => {
+	let improved = true;
+	while (improved) {
+		improved = false;
+		for (let i = 1; i < path.length - 2; i++) {
+			for (let j = i + 1; j < path.length - 1; j++) {
+				let a = path[i - 1];
+				let b = path[i];
+				let c = path[j];
+				let d = path[j + 1];
+
+				if (doLinesIntersect(a, b, c, d)) {
+					path = swapEdges(path, i, j);
+					improved = true;
+				}
+			}
+		}
+	}
+	return path;
+};
+
+const swapEdges = (path: NodeType[], i: number, j: number): NodeType[] => {
+	let newPath = [...path];
+	while (i < j) {
+		[newPath[i], newPath[j]] = [newPath[j], newPath[i]];
+		i++;
+		j--;
+	}
+	return newPath;
+};
+
+const doLinesIntersect = (
+	p1: NodeType,
+	p2: NodeType,
+	p3: NodeType,
+	p4: NodeType
+): boolean => {
+	const orientation = (a: NodeType, b: NodeType, c: NodeType) =>
+		(b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+
+	return (
+		orientation(p1, p2, p3) * orientation(p1, p2, p4) < 0 &&
+		orientation(p3, p4, p1) * orientation(p3, p4, p2) < 0
+	);
+};
+
+const getDistance = (node1: NodeType, node2: NodeType): number => {
+	return Math.sqrt(
+		Math.pow(node2.x - node1.x, 2) + Math.pow(node2.y - node1.y, 2)
+	);
 };
 
 export default calculateTSPPath;
