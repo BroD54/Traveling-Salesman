@@ -18,7 +18,7 @@ Here’s an example of the visualization in action:
 
 
 You can try the project live here:  
-[**Traveling Salesman Visualizer**](https://BroD54.github.io/Travling-Salesman/)
+[**Traveling Salesman Visualizer**](https://BroD54.github.io/Traveling-Salesman/)
 
 ## Features
 
