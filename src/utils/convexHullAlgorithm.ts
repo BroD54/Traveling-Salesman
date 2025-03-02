@@ -3,7 +3,7 @@ const convexHullAlgorithm = (grid: NodeType[][]): { convexHullPoints: NodeType[]
   const steps: { convexHullPoints: NodeType[] }[] = [];
 
   // Filter active points that are not the start node
-  let points = grid.flat().filter(node => node.isSelected && !node.isStart); 
+  let points = grid.flat().filter(node => node.isSelected || node.isStart); 
 
   // Ensure there are enough points for a hull
   if (points.length < 3) {

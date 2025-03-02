@@ -8,6 +8,7 @@ const initNodes = (rows: number, cols: number): NodeType[][] => {
             id: i * cols + j + 1,
             x: i,
             y: j,
+            isConvexHull: false,
             isStart: false,
             isSelected: false,
             isVisited: false,

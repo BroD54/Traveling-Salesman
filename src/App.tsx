@@ -5,14 +5,15 @@ import initNodes from "./utils/initiNodes";
 import nearestNeighbor from './utils/nearestNeighbor';
 import totalPath from './utils/path';
 import convexHullAlgorithm from './utils/convexHullAlgorithm';
+import calculateTSPPath from './utils/calculateTSPPath';
 
 function App() {
   const rowNum = 40;
   const colNum = 70;
   const [grid, setGrid] = useState<NodeType[][]>(initNodes(rowNum, colNum));
   const [speed, setSpeed] = useState<number>(50);
-
   const [convexHull, setConvexHull] = useState<NodeType[]>([]);
+  const [isConvexHullFinished, setIsConvexHullFinished] = useState<boolean>(false);
 
   const toggleNode = (id: number, selected: boolean = false, start: boolean = false) => {
     if (selected) {
@@ -46,49 +47,42 @@ function App() {
   };
 
   const runConvexHullAlgorithm = () => {
-    // Get convex hull points step by step
     const algorithmSteps = convexHullAlgorithm(grid);
-  
+
     let stepIndex = 0;
-  
+
     const interval = setInterval(() => {
       if (stepIndex < algorithmSteps.length) {
         const currentStep = algorithmSteps[stepIndex];
-  
-        // Update convex hull points
+
         setConvexHull(currentStep.convexHullPoints);
-  
-        // Update grid with convex hull nodes
-        updateConvexHullNodes(currentStep.convexHullPoints);
-  
+
+        setGrid((prevGrid) => {
+          const updatedGrid = prevGrid.map((row) =>
+            row.map((node) => {
+              const isPartOfHull = currentStep.convexHullPoints.some((point) => point.id === node.id);
+              return isPartOfHull ? { ...node, isConvexHull: true } : node;
+            })
+          );
+          return updatedGrid;
+        });
+
         stepIndex++;
       } else {
         clearInterval(interval); // Stop animation when done
-  
-        // After convex hull is finished, call nearest neighbor algorithm
-        const startNode = algorithmSteps[algorithmSteps.length - 1].convexHullPoints[0]; // First point of the convex hull
-        setGrid(prevGrid =>
-          prevGrid.map(row =>
-            row.map(node =>
-              node.id === startNode.id ? { ...node, isStart: true } : node
-            )
-          )
-        );
 
-        const nodes = nearestNeighbor(grid); // Pass the start point to nearest neighbor
-        if (nodes.length > 0) {
-          const path = totalPath(grid, nodes);
-          animatePath(path);
-        }
+        // Mark convex hull as finished
+        setIsConvexHullFinished(true);
       }
     }, 500); // Speed of convex hull animation
   };
 
   const updateConvexHullNodes = (convexHullPoints: NodeType[]) => {
-    setGrid(prevGrid =>
-      prevGrid.map(row =>
-        row.map(node => {
-          const isPartOfHull = convexHullPoints.some(point => point.id === node.id);
+    console.log('Updating grid with convex hull nodes...');
+    setGrid((prevGrid) =>
+      prevGrid.map((row) =>
+        row.map((node) => {
+          const isPartOfHull = convexHullPoints.some((point) => point.id === node.id);
           return isPartOfHull ? { ...node, isConvexHull: true } : node;
         })
       )
@@ -104,10 +98,10 @@ function App() {
         return;
       }
 
-      setGrid(prevGrid =>
-        prevGrid.map(row =>
-          row.map(node =>
-            path.slice(0, index + 1).some(p => p.id === node.id)
+      setGrid((prevGrid) =>
+        prevGrid.map((row) =>
+          row.map((node) =>
+            path.slice(0, index + 1).some((p) => p.id === node.id)
               ? { ...node, isOnPath: true }
               : node
           )
@@ -123,8 +117,19 @@ function App() {
   };
 
   useEffect(() => {
-    // console.log(grid); // This will log the grid after the state update
-  }, [grid]);
+    if (isConvexHullFinished) {
+      console.log("Convex Hull Finished, Calculating TSP");
+      const tspPath = calculateTSPPath(grid);
+      console.log("TSP Path:", tspPath);
+      const path = totalPath(grid, tspPath);
+
+      if (path.length > 0) {
+        animatePath(path);
+      }
+      // Reset convex hull finished state
+      setIsConvexHullFinished(false);
+    }
+  }, [isConvexHullFinished, grid]); // This will trigger when convex hull is finished and grid updates
 
   return (
     <>
