@@ -1,4 +1,4 @@
-# TSP Convex Hull & Selected Nodes Visualizer
+# Traveling Salesman Visualizer
 
 This project visualizes the process of solving the Traveling Salesman Problem (TSP) using a combination of convex hull and selected nodes. It is built with React and includes interactive features to visualize the TSP path, convex hull algorithm, and optimized node insertion.
 
