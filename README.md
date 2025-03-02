@@ -14,7 +14,8 @@ The Traveling Salesman Problem (TSP) seeks to find the shortest possible route t
 
 Here’s an example of the visualization in action:
 
-![Project Demo](./public/demo.png)
+![Project Demo](https://github.com/BroD54/Traveling-Salesman/blob/main/public/demo.PNG)
+
 
 You can try the project live here:  
 [**Traveling Salesman Visualizer**](https://BroD54.github.io/Travling-Salesman/)
