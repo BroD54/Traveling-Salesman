@@ -7,7 +7,7 @@ type GridProps = {
 }
 
 const Grid = ({nodes, toggleNode}: GridProps) => {
-
+    
   return (
     <div className="flex flex-col justify-center items-center">
         {
@@ -19,10 +19,6 @@ const Grid = ({nodes, toggleNode}: GridProps) => {
             </div>
             ))
         }
-
-        {/* {results.map((course, index) => (
-          <Result key={index} course={course} />
-        ))} */}
     </div>
   )
 }

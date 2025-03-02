@@ -46,7 +46,7 @@ const Bar = ({ onRunAlgorithm, onClearGrid, onSpeedChange }: BarProp) => {
           className="p-2 rounded-md border border-gray-300 text-black"
         >
           <option value="nearestNeighbor">Nearest Neighbor</option>
-          <option value="otherAlgorithm">Other Algorithm</option>
+          <option value="convexHull">Convex Hull</option>
         </select>
 
         <button

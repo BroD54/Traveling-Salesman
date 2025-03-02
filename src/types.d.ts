@@ -18,4 +18,5 @@ interface NodeType {
     isSelected: boolean;
     isVisited: boolean;
     isOnPath: boolean;
+    isConvexHull: boolean;
 }

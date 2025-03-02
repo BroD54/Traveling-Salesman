@@ -9,6 +9,7 @@ const Node = ( { node, toggleNode } : NodeProps ) => {
 
 const nodeColor = (): string => {
   if (node.isStart) return "bg-green-300";
+  if (node.isConvexHull) return "bg-red-300"; 
   if (node.isSelected) return "bg-slate-400";
   if (node.isOnPath) {
     return "bg-blue-400 transition-all duration-300 ease-in-out shadow-lg transform animate-pulse";

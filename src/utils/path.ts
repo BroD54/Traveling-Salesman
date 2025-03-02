@@ -38,7 +38,7 @@ const findPath = (start: NodeType, end: NodeType, cols: number): NodeType[] => {
             y += stepY;
             dy -= stepY;
         }
-        path.push({ id: x * cols + y + 1, x, y, isStart: false, isVisited: false, isSelected: false, isOnPath: true }); // Add node to path
+        path.push({ id: x * cols + y + 1, x, y, isStart: false, isVisited: false, isSelected: false, isOnPath: true, isConvexHull: false}); // Add node to path
     }
 
     return path;
