@@ -21,14 +21,26 @@ const Bar = ({ onRunAlgorithm, onClearGrid, onSpeedChange }: BarProp) => {
 	};
 
 	return (
-		<div className="bg-white shadow-md p-4 px-8 mb-4 flex justify-between items-center">
-			<h1 className="text-3xl font-semibold text-gray-900">
+		<div className="bg-white shadow-md p-4 sm:px-6 lg:px-8 mb-4 flex flex-col md:flex-row justify-between items-start md:items-center">
+			<h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-4 md:mb-0">
 				Traveling Salesman Visualizer
 			</h1>
 
-			<div className="flex space-x-4 items-center">
-				<div className="flex items-center">
-					<label htmlFor="speed" className="mr-2 text-gray-700">
+			<div className="flex flex-col space-y-4 m-auto md:space-y-0 md:flex-row md:space-x-4 md:mr-0">
+				{' '}
+				<select
+					value={selectedAlgorithm}
+					onChange={handleAlgorithmChange}
+					className="p-2 rounded-md border border-gray-300 text-black text-sm sm:text-base w-full"
+				>
+					<option value="nearestNeighbor">Nearest Neighbor</option>
+					<option value="convexHull">Convex Hull</option>
+				</select>
+				<div className="flex items-center w-full">
+					<label
+						htmlFor="speed"
+						className="mr-2 text-gray-700 text-sm sm:text-base"
+					>
 						Speed:
 					</label>
 					<input
@@ -41,28 +53,18 @@ const Bar = ({ onRunAlgorithm, onClearGrid, onSpeedChange }: BarProp) => {
 							setSpeed(newSpeed);
 							onSpeedChange(100 - newSpeed);
 						}}
-						className="w-24"
+						className="w-full"
 					/>
 				</div>
-
-				<select
-					value={selectedAlgorithm}
-					onChange={handleAlgorithmChange}
-					className="p-2 rounded-md border border-gray-300 text-black"
-				>
-					<option value="nearestNeighbor">Nearest Neighbor</option>
-					<option value="convexHull">Convex Hull</option>
-				</select>
-
 				<button
 					onClick={handleRunAlgorithm}
-					className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md"
+					className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md w-full text-sm sm:text-base"
 				>
 					Run Algorithm
 				</button>
 				<button
 					onClick={onClearGrid}
-					className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md"
+					className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md w-full text-sm sm:text-base"
 				>
 					Clear Grid
 				</button>

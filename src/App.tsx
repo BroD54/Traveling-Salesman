@@ -8,13 +8,27 @@ import convexHullAlgorithm from './utils/convexHullAlgorithm';
 import calculateTSPPath from './utils/calculateTSPPath';
 
 function App() {
-	const rowNum = 40;
-	const colNum = 70;
+	const [rowNum, setRowNum] = useState<number>(40);
+	const [colNum, setColNum] = useState<number>(70);
 	const [grid, setGrid] = useState<NodeType[][]>(initNodes(rowNum, colNum));
 	const [speed, setSpeed] = useState<number>(50);
 	const [_, setConvexHull] = useState<NodeType[]>([]);
 	const [isConvexHullFinished, setIsConvexHullFinished] =
 		useState<boolean>(false);
+
+	const updateGridSize = () => {
+		const rows = Math.floor(window.innerHeight / 35);
+		const cols = Math.floor(window.innerWidth / 35);
+		setRowNum(rows);
+		setColNum(cols);
+		setGrid(initNodes(rows, cols));
+	};
+
+	useEffect(() => {
+		updateGridSize();
+		window.addEventListener('resize', updateGridSize);
+		return () => window.removeEventListener('resize', updateGridSize);
+	}, []);
 
 	const toggleNode = (
 		id: number,
@@ -133,14 +147,14 @@ function App() {
 	}, [isConvexHullFinished, grid]);
 
 	return (
-		<>
+		<div className="min-h-screen">
 			<Bar
 				onRunAlgorithm={runAlgorithm}
 				onClearGrid={onClearGrid}
 				onSpeedChange={setSpeed}
 			/>
 			<Grid nodes={grid} toggleNode={toggleNode} />
-		</>
+		</div>
 	);
 }
 

@@ -16,7 +16,7 @@ const Node = ({ node, toggleNode }: NodeProps) => {
 
 	return (
 		<div
-			className={`${nodeColor()} w-4 h-4 cursor-pointer border border-white border-[0.5px]`}
+			className={`${nodeColor()} w-4 h-4 md:w-6 md:h-6 cursor-pointer border-white border-[0.5px]`}
 			onClick={() => toggleNode(node.id, true)}
 			onContextMenu={(event) => {
 				event.preventDefault();

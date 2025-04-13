@@ -3,7 +3,7 @@ const nearestNeighbor = (grid: NodeType[][]): NodeType[] => {
 		.flat()
 		.find((node) => node.isStart);
 	if (!currentNode) {
-		console.error('No start node found');
+		alert('No start node found');
 		return [];
 	}
 
